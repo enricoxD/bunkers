@@ -2,7 +2,7 @@ package de.hglabor.common.playerlist.body
 
 import de.hglabor.common.playerlist.PlayerListManager
 
-class PlayerListColumn(val size: Int) {
+class PlayerListColumn(val size: Int): PlayerListBody.Jop() {
     init {
         if (size > PlayerListManager.MAX_ENTRIES_PER_COLUMN)
             throw IllegalArgumentException("PlayerListColumns can't have more than ${PlayerListManager.MAX_ENTRIES_PER_COLUMN} entries")

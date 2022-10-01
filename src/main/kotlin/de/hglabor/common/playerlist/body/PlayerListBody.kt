@@ -10,6 +10,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.axay.kspigot.extensions.onlinePlayers
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket
+import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket
+import net.minecraft.network.protocol.game.ClientboundTabListPacket
+import net.minecraft.world.scores.Scoreboard
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.UUID
@@ -106,12 +109,23 @@ class PlayerListBody {
             }
         }
 
-        columns.filterNotNull().forEach { column ->
-            column.entries.forEach { _entry ->
-                val entry = _entry ?: PlayerListEntryBuilder().apply(placeholderCallback).entry
+        columns.filterNotNull().forEachIndexed { x, column ->
+            column.entries.forEachIndexed { y, _entry ->
+                val entry = _entry ?: (PlayerListEntryBuilder(x, y).apply(placeholderCallback).entry).also {
+                    column.entries[y] = it
+                }
 
                 player.connection.send(
                     ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.ADD_PLAYER, entry.serverPlayer)
+                )
+
+                val team = net.minecraft.world.scores.PlayerTeam(Scoreboard(), teamName(x, y))
+                player.connection.send(
+                    ClientboundSetPlayerTeamPacket.createPlayerPacket(
+                        team,
+                        "",
+                        ClientboundSetPlayerTeamPacket.Action.ADD
+                    ),
                 )
             }
         }
@@ -126,7 +140,7 @@ class PlayerListBody {
         lists.remove(player.uniqueId)
         columns.filterNotNull().forEach { column ->
             column.entries.forEach { _entry ->
-                val entry = _entry ?: PlayerListEntryBuilder().apply(placeholderCallback).entry
+                val entry = _entry ?: return@forEach
 
                 player.connection.send(
                     ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, entry.serverPlayer)
@@ -151,4 +165,13 @@ class PlayerListBody {
                 }
         }
     }
+
+    abstract class Jop() {
+
+    }
+}
+
+class Dasd(): PlayerListBody.Jop()
+private fun teamName(x: Int, y: Int): String {
+    return "$x.${String.format("%02d", y)}"
 }

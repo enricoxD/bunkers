@@ -1,8 +1,6 @@
 package de.hglabor.common.playerlist.builder
 
-import de.hglabor.auseinandersetzung.common.scoreboard.BoardBuilder
 import de.hglabor.common.playerlist.body.PlayerListBody
-import de.hglabor.common.playerlist.body.PlayerListColumn
 
 class PlayerListBodyBuilder(val body: PlayerListBody = PlayerListBody()) {
     var removePlayers = false
@@ -19,21 +17,15 @@ class PlayerListBodyBuilder(val body: PlayerListBody = PlayerListBody()) {
         return callback
     }
 
-    operator fun PlayerListColumn.unaryPlus() {
-        body.addColumn(this)
-    }
-
     operator fun (PlayerListColumnBuilder.() -> Unit).unaryPlus() {
-        val column = PlayerListColumnBuilder().apply(this).column
+        val index = body.columns.indexOfFirst { it == null }
+        if (index == -1) throw IndexOutOfBoundsException()
+
+        val column = PlayerListColumnBuilder(index).apply(this).column
         body.addColumn(column)
     }
-
-    operator fun set(index: Int, column: PlayerListColumn) {
-        body.addColumn(index, column)
-    }
-
     operator fun set(index: Int, entryCallback: PlayerListColumnBuilder.() -> Unit) {
-        val column = PlayerListColumnBuilder().apply(entryCallback).column
+        val column = PlayerListColumnBuilder(index).apply(entryCallback).column
         body.addColumn(index, column)
     }
 }

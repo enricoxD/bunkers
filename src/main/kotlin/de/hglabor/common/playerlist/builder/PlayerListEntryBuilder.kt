@@ -4,7 +4,7 @@ import de.hglabor.common.playerlist.SkinColor
 import de.hglabor.common.playerlist.body.PlayerListEntry
 import net.minecraft.network.chat.MutableComponent
 
-class PlayerListEntryBuilder(val entry: PlayerListEntry = PlayerListEntry(SkinColor.WHITE)) {
+class PlayerListEntryBuilder(val x: Int, val y: Int, val entry: PlayerListEntry = PlayerListEntry(x, y, SkinColor.WHITE)) {
     var name: () -> MutableComponent = entry.textCallback
         set(value) {
             entry.textCallback = value

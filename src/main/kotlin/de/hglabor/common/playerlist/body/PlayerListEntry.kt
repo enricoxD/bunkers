@@ -18,7 +18,7 @@ import java.util.*
  * @param skin the [SkinColor] you want the entry to have
  * @param textCallback the callback that will be invoked to get a new text on update
  */
-class PlayerListEntry(val skin: SkinColor, var textCallback: () -> MutableComponent) {
+class PlayerListEntry(val x: Int, val y: Int, val skin: SkinColor, var textCallback: () -> MutableComponent) {
     companion object {
         private val SERVER = MinecraftServer.getServer()
     }
@@ -29,11 +29,11 @@ class PlayerListEntry(val skin: SkinColor, var textCallback: () -> MutableCompon
      * @param skin the [SkinColor] you want the entry to have
      * @param component the component which will be displayed in the tablist
      */
-    constructor(skin: SkinColor, component: MutableComponent) : this(skin, { component }) {
+    constructor(x: Int, y: Int, skin: SkinColor, component: MutableComponent) : this(x, y, skin, { component }) {
         shouldUpdate = false
     }
 
-    constructor(skin: SkinColor) : this(skin, { literalText() }) {
+    constructor(x: Int, y: Int, skin: SkinColor) : this(x, y, skin, { literalText() }) {
         shouldUpdate = false
     }
 
@@ -43,12 +43,12 @@ class PlayerListEntry(val skin: SkinColor, var textCallback: () -> MutableCompon
     val serverPlayer = ServerPlayer(
         SERVER,
         SERVER.overworld(),
-        GameProfile(UUID.randomUUID(), ""),
+        GameProfile(UUID.randomUUID(), String.format("%02d", x * 20 + y)),
         null
     )
 
     /**
-     * actually updates the name of the [PlayerListEntry.serverPlayer]
+     * sends the packet to update the name of the [PlayerListEntry.serverPlayer]
      *
      * @param player the player that will receive the packet
      */
@@ -60,6 +60,20 @@ class PlayerListEntry(val skin: SkinColor, var textCallback: () -> MutableCompon
         }
         player.connection.send(
             ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.UPDATE_DISPLAY_NAME, serverPlayer)
+        )
+    }
+
+    /**
+     * sends the packets to update the skin of the [PlayerListEntry.serverPlayer]
+     *
+     * @param player the player that will receive the packet
+     */
+    fun updateSkin(player: Player) {
+        player.connection.send(
+            ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.REMOVE_PLAYER, serverPlayer)
+        )
+        player.connection.send(
+            ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.ADD_PLAYER, serverPlayer)
         )
     }
 
