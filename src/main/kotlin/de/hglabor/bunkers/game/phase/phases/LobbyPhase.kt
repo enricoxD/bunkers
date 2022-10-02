@@ -6,7 +6,6 @@ import de.hglabor.bunkers.game.phase.GamePhase
 import de.hglabor.bunkers.game.pvpstyle.PvPStyleVoteGUI
 import de.hglabor.bunkers.teams.TeamSelector
 import de.hglabor.common.extension.broadcast
-import de.hglabor.common.playerlist.PlayerListManager
 import de.hglabor.common.playerlist.builder.ABC
 import de.hglabor.hcfcore.event.koth.KothManager
 import de.hglabor.hcfcore.manager.player.teamPlayer

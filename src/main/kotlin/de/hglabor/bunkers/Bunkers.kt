@@ -13,7 +13,6 @@ import de.hglabor.bunkers.mechanics.PlayerRespawn
 import de.hglabor.bunkers.mechanics.Protection
 import de.hglabor.bunkers.shop.ShopManager
 import de.hglabor.bunkers.teams.TeamManager
-import de.hglabor.common.playerlist.PlayerListManager
 import de.hglabor.hcfcore.HCFCore
 import de.hglabor.hcfcore.commands.BalanceCommand
 import de.hglabor.hcfcore.commands.KothCommand
@@ -52,7 +51,6 @@ class Bunkers : KSpigot() {
         PlayerRespawn.enable()
         PlayerClaimListeners.enable()
         BlockBreak.enable()
-        PlayerListManager
         GameManager.pvpStyleManager.style?.enable()
     }
 

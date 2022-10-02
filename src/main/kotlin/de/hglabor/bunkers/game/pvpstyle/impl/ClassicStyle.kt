@@ -7,12 +7,14 @@ import de.hglabor.bunkers.shop.entry.impl.BuyEntry
 import de.hglabor.bunkers.shop.entry.impl.BuyMultipleEntry
 import de.hglabor.bunkers.shop.entry.impl.SetEntry
 import net.axay.kspigot.event.listen
+import net.axay.kspigot.extensions.onlinePlayers
 import net.axay.kspigot.gui.InventorySlotCompound
 import net.axay.kspigot.gui.Slots
 import net.axay.kspigot.runnables.KSpigotRunnable
 import net.axay.kspigot.runnables.task
 import org.bukkit.Material
 import org.bukkit.Sound
+import org.bukkit.attribute.Attribute
 import org.bukkit.block.Block
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockBreakEvent
@@ -29,6 +31,10 @@ object ClassicStyle: IPvPStyle {
 
     override fun enable() {
         val bucketTask = mutableMapOf<Block, KSpigotRunnable?>()
+
+        onlinePlayers.forEach { player ->
+            player.getAttribute(Attribute.GENERIC_ATTACK_SPEED)?.baseValue = 4.0
+        }
 
         listen<PlayerBucketEmptyEvent>(priority = EventPriority.HIGHEST) {
             if (it.isCancelled) return@listen

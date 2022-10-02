@@ -1,139 +1,173 @@
 package de.hglabor.common.playerlist.builder
 
-import com.mojang.authlib.GameProfile
+import de.hglabor.bunkers.game.GameManager
+import de.hglabor.bunkers.game.phase.phases.LobbyPhase
+import de.hglabor.bunkers.mechanics.PlayerRespawn
+import de.hglabor.bunkers.teams.BunkersTeam
 import de.hglabor.bunkers.teams.TeamManager
-import de.hglabor.common.extension.connection
-import de.hglabor.common.playerlist.SkinColor
+import de.hglabor.common.playerlist.SkinTexture
+import de.hglabor.common.playerlist.body.PlayerListBody
 import de.hglabor.common.text.literalText
 import de.hglabor.hcfcore.manager.player.teamPlayer
 import net.axay.kspigot.chat.KColors
-import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket
-import net.minecraft.server.MinecraftServer
-import net.minecraft.server.level.ServerPlayer
+import net.axay.kspigot.extensions.onlinePlayers
 import org.bukkit.entity.Player
-import java.util.*
 
 object ABC {
+    // TODO rename class x D
+    // TODO skins dont update?
     fun setPlayerList(player: Player) {
-        val playerList = PlayerListBodyBuilder().apply {
-            removePlayers = true
-            placeholder {
-                name = {
-                    literalText {
-                        text("Hallo") { color = (0x000000..0xFFFFFF).random() }
-                    }
+        player.setTablist {
+            +column(0) {
+                +entry(2) {
+                    name(literalText("Team Info") { color = KColors.AQUAMARINE.value(); bold = true })
                 }
 
-                shouldUpdate = true
-                skin = SkinColor.DARK_BLUE
-            }
-
-            +column {
-                +entry {
-                    shouldUpdate = true
-                }
-                +5 to entry {
-                    name = {
-                        literalText {
-                            text("Money: ") { color = KColors.GRAY.value() }
-                        }
-                    }
-
-                    shouldUpdate = false
-                    skin = SkinColor.Custom(
-                        "ewogICJ0aW1lc3RhbXAiIDogMTYwMTU5NzczMzkyOSwKICAicHJvZmlsZUlkIiA6ICJkZTE0MGFmM2NmMjM0ZmM0OTJiZTE3M2Y2NjA3MzViYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJTUlRlYW0iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjhjYzJhZDNmYWEwMmYzMzUwMjc3YjYwM2U0ZWI2MTg1ZWFiZDQ3NDM5ZDJkZmQwZjc2MjRlNjg2MDUzZjZhYSIsCiAgICAgICJtZXRhZGF0YSIgOiB7CiAgICAgICAgIm1vZGVsIiA6ICJzbGltIgogICAgICB9CiAgICB9CiAgfQp9",
-                        "rp4lgczvE1ZOwW1/rhKhtzBvCFz5XolZ7BoEm3bieoDrbjMqvsrjyMDs6KdvxbOQI26JdrdWzJUm5mam47QKDes682dtqVvefD221uDRG9vb6km3Xal2B5sGqdhl9PtuQEeGNZlTI1Ip4kBHBIcugTCWV0NzpG3dTWDi/E7rIKviGRxL4hQXMysY9e8P0de8WOMeQ/X5vV0jkPgc15OLBW+k/VTvPmFGTAv/r0Bp3sRP3L36KB8auDXWpD7DTNgGuJTlDKm1/sjTRO/5+cT/5wK6Q8oxzfrnNgt81syuCwLVpt1SP18zLUdKEGTlsSV/01HLCrQusYyBwu5gxyXkpNnd2+bg4DA+DlgxApssZEYhKKR5UsgQwrcG8GU6O1Gxt73ZSjtkq31Wa2J6+RXYoFnBQC6apIcFHoRGk7FW03x7mZiGauCCNhCIJ6gmCMjml9wwbrFP3lLedIQRn+9NgckvKOtS6dCzwyf/9+A3Fl3GlPqQRhVq96MLDnA28gcYWKToDqgh/Ra0MDJ3alSEBf5MY3ayOz3EUivxQR1ClMu6i3D+aAawqGUc3pbcrNlrlvffBfMAgGc7nTvtWakloqWlE/Xu4CcZ/fK0BIFGf3MD77CRJHF/MfVQFYkkGyuh5zbd/qEmrKaCKvxavopFallTr89zasWbg51nlhA7lgU="
-                    )
-                }
-                +6 to entry {
-                    name = {
-                        literalText {
-                            text("$${player.teamPlayer.balance}") { color = KColors.GREEN.value() }
-                        }
-                    }
-
-                    shouldUpdate = true
-                    skin = SkinColor.Custom(
-                        "ewogICJ0aW1lc3RhbXAiIDogMTYwMTU5NzczMzkyOSwKICAicHJvZmlsZUlkIiA6ICJkZTE0MGFmM2NmMjM0ZmM0OTJiZTE3M2Y2NjA3MzViYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJTUlRlYW0iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjhjYzJhZDNmYWEwMmYzMzUwMjc3YjYwM2U0ZWI2MTg1ZWFiZDQ3NDM5ZDJkZmQwZjc2MjRlNjg2MDUzZjZhYSIsCiAgICAgICJtZXRhZGF0YSIgOiB7CiAgICAgICAgIm1vZGVsIiA6ICJzbGltIgogICAgICB9CiAgICB9CiAgfQp9",
-                        "rp4lgczvE1ZOwW1/rhKhtzBvCFz5XolZ7BoEm3bieoDrbjMqvsrjyMDs6KdvxbOQI26JdrdWzJUm5mam47QKDes682dtqVvefD221uDRG9vb6km3Xal2B5sGqdhl9PtuQEeGNZlTI1Ip4kBHBIcugTCWV0NzpG3dTWDi/E7rIKviGRxL4hQXMysY9e8P0de8WOMeQ/X5vV0jkPgc15OLBW+k/VTvPmFGTAv/r0Bp3sRP3L36KB8auDXWpD7DTNgGuJTlDKm1/sjTRO/5+cT/5wK6Q8oxzfrnNgt81syuCwLVpt1SP18zLUdKEGTlsSV/01HLCrQusYyBwu5gxyXkpNnd2+bg4DA+DlgxApssZEYhKKR5UsgQwrcG8GU6O1Gxt73ZSjtkq31Wa2J6+RXYoFnBQC6apIcFHoRGk7FW03x7mZiGauCCNhCIJ6gmCMjml9wwbrFP3lLedIQRn+9NgckvKOtS6dCzwyf/9+A3Fl3GlPqQRhVq96MLDnA28gcYWKToDqgh/Ra0MDJ3alSEBf5MY3ayOz3EUivxQR1ClMu6i3D+aAawqGUc3pbcrNlrlvffBfMAgGc7nTvtWakloqWlE/Xu4CcZ/fK0BIFGf3MD77CRJHF/MfVQFYkkGyuh5zbd/qEmrKaCKvxavopFallTr89zasWbg51nlhA7lgU="
-                    )
-                }
-            }
-
-            +column {
-                +3 to entry {
-                    name = {
-                        literalText {
-                            text("Team Red") { color = KColors.RED.value(); bold = true }
-                        }
-                    }
-
-                    shouldUpdate = false
-                    skin = SkinColor.RED
-                }
-
-                for (i in 0..TeamManager.MAX_PLAYERS_PER_FACTION) {
-                    +(3 + 1) to entry {
-                        name = {
-                            val member = TeamManager.red.players.getOrNull(i)
-                            literalText {
-                                text(member?.name ?: "") { color = KColors.RED.value() }
+                +entry(3) {
+                    name {
+                        val team = player.teamPlayer.team
+                        if (team == null)
+                            text("No team") { color = KColors.RED.value() }
+                        else {
+                            text("Online: ") { color = KColors.GRAY.value() }
+                            text("${team.players.size}/${TeamManager.MAX_PLAYERS_PER_FACTION}") {
+                                color = KColors.WHITE.value()
                             }
                         }
+                    }
+                }
 
-                        shouldUpdate = true
-                        skin = SkinColor.DARK_RED
+                +entry(4) {
+                    name {
+                        val team = player.teamPlayer.team ?: return@name
+                        text("DTR: ") { color = KColors.GRAY.value() }
+                        text("${team.dtr}") { color = KColors.WHITE.value() }
+                    }
+                }
+
+                +entry(5) {
+                    name {
+                        val team = player.teamPlayer.team ?: return@name
+                        val homeLocation = team.homeLocation ?: return@name
+                        text("Home: ") { color = KColors.GRAY.value() }
+                        text("${homeLocation.blockX}, ${homeLocation.blockZ}") { color = KColors.WHITE.value() }
+                    }
+                }
+
+                +entry(2 + TeamManager.MAX_PLAYERS_PER_FACTION + 4) {
+                    name(literalText("Game Info") { color = KColors.AQUAMARINE.value(); bold = true })
+                }
+
+                +entry(3 + TeamManager.MAX_PLAYERS_PER_FACTION + 4) {
+                    name {
+                        val style = GameManager.pvpStyleManager.style
+                        text("Style: ") { color = KColors.GRAY.value() }
+                        text(style?.name ?: "Voting") { color = KColors.WHITE.value() }
+                    }
+                }
+            }
+
+            +column(1) {
+                addTeamEntries(2, TeamManager.yellow, SkinTexture.YELLOW)
+
+                addTeamEntries(2 + TeamManager.MAX_PLAYERS_PER_FACTION + 4, TeamManager.blue, SkinTexture.BLUE)
+            }
+
+            +column(2) {
+                addTeamEntries(2, TeamManager.red, SkinTexture.RED)
+
+                addTeamEntries(2 + TeamManager.MAX_PLAYERS_PER_FACTION + 4, TeamManager.green, SkinTexture.GREEN)
+            }
+
+            +column(3) {
+                addSpectators()
+            }
+        }
+    }
+
+    private fun PlayerListColumnBuilder.addTeamEntries(y: Int, team: BunkersTeam, skin: SkinTexture) {
+        +entry(y) {
+            name {
+                text("Team ${team.name}") { color = team.teamColor.value();bold = true }
+                text(" | ") { color = KColors.DARKGRAY.value() }
+                text("${team.dtr}") { color = KColors.FLORALWHITE.value() }
+            }
+            skin(skin)
+        }
+
+        for (i in 0..TeamManager.MAX_PLAYERS_PER_FACTION) {
+            +entry(y + 1 + i) {
+                name {
+                    val member = team.teamPlayers.getOrNull(i)
+                    val nameColor = when {
+                        member?.uuid in PlayerRespawn.eliminatedPlayers -> KColors.DARKGRAY
+                        member?.player == null ||
+                                member.player?.isOnline == false -> KColors.GRAY
+
+                        else -> team.teamColor
+                    }
+
+                    text(member?.name ?: "") {
+                        if (member == null) return@text
+                        color = nameColor.value()
+
+                        strikethrough = (when (member.uuid) {
+                            in PlayerRespawn.eliminatedPlayers,
+                            in PlayerRespawn.respawningPlayers -> true
+
+                            else -> false
+                        })
+                    }
+                }
+
+                skin {
+                    val member = team.teamPlayers.getOrNull(i)
+                    val bukkitPlayer = member?.player
+
+                    when {
+                        member == null -> SkinTexture.GRAY
+                        bukkitPlayer != null -> SkinTexture.PlayerSkinTexture(bukkitPlayer)
+                        else -> null
                     }
                 }
             }
         }
-
-        playerList.body.show(player)
     }
 
-    fun setPlayerListd(player: Player) {
-        val SERVER = MinecraftServer.getServer()
-
-        fun randomString(): String {
-            return StringBuilder().apply {
-                repeat(4) {
-                    append((('a'..'z') + ('A'..'Z')).random())
+    private fun PlayerListColumnBuilder.addSpectators() {
+        +entry(2) {
+            name {
+                text(
+                    if (GameManager.currentPhase == LobbyPhase) "No Team"
+                    else "Spectators"
+                ) {
+                    color = KColors.DIMGRAY.value()
+                    bold = true
                 }
-            }.toString()
-        }
-
-        var i = 0
-        
-        (0 until 4).forEach { x ->
-            (0 until 20).forEach { y ->
-                println(i)
-                val name = String.format("%02d", x * 20 + y)
-
-                val serverPlayer = ServerPlayer(
-                    SERVER,
-                    SERVER.overworld(),
-                    GameProfile(UUID.randomUUID(), name),
-                    null
-                )
-
-                serverPlayer.javaClass.getDeclaredField("listName").apply {
-                    isAccessible = true
-                    set(serverPlayer, literalText {
-                        text(randomString()) { color = KColors.LIGHTPINK.value() }
-                        text("-") { color = KColors.WHITE.value() }
-                        text("$i") { color = KColors.MEDIUMPURPLE.value() }
-                    })
-                    isAccessible = true
-                }
-                player.connection.send(
-                    ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.UPDATE_DISPLAY_NAME, serverPlayer)
-                )
-
-                player.connection.send(
-                    ClientboundPlayerInfoPacket(ClientboundPlayerInfoPacket.Action.ADD_PLAYER, serverPlayer)
-                )
-                i += 1
             }
         }
+
+        for (i in 0 until 15) {
+            +entry(3 + i) {
+                name {
+                    val spec = onlinePlayers.filter { it.teamPlayer.team == null }.getOrNull(i)
+                    text(spec?.name ?: "") { color = KColors.DIMGRAY.value(); italic = true }
+                }
+
+                skin {
+                    when (val spec = onlinePlayers.filter { it.teamPlayer.team == null }.getOrNull(i)) {
+                        null -> SkinTexture.DARK_GRAY
+                        else -> SkinTexture.PlayerSkinTexture(spec)
+                    }
+                }
+            }
+        }
+    }
+}
+
+inline fun Player.setTablist(builder: PlayerListBodyBuilder.() -> Unit): PlayerListBody {
+    return PlayerListBody().apply {
+        PlayerListBodyBuilder(this).apply(builder)
+        show(this@setTablist)
     }
 }

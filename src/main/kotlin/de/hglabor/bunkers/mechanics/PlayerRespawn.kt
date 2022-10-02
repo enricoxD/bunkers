@@ -20,11 +20,13 @@ import java.util.*
 
 object PlayerRespawn {
     val eliminatedPlayers = mutableSetOf<UUID>()
+    val respawningPlayers = mutableSetOf<UUID>()
 
     fun enable() {
         listen<PlayerDeathEvent>(priority = EventPriority.LOW) {
             val player = it.player
             val team = player.teamPlayer.team ?: return@listen
+            respawningPlayers.add(player.uniqueId)
             taskRunLater(1) {
                 player.gameMode = GameMode.SPECTATOR
                 player.spigot().respawn()
@@ -35,13 +37,14 @@ object PlayerRespawn {
 
             if (team.dtr <= 0.0f) {
                 player.title(literalText("You have been eliminated!") { color = KColors.RED })
-                eliminatedPlayers += player.uniqueId
+                eliminatedPlayers.add(player.uniqueId)
                 checkForWinner()
                 return@listen
             }
 
             task(true, 20, 20, 5, endCallback = {
                 taskRunLater(20) {
+                    respawningPlayers.remove(player.uniqueId)
                     player.clearTitle()
                     player.teamPlayer.team?.homeLocation?.let { location ->
                         player.teleport(location)

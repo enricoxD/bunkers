@@ -1,26 +1,29 @@
 package de.hglabor.common.playerlist.builder
 
-import de.hglabor.common.playerlist.SkinColor
-import de.hglabor.common.playerlist.body.PlayerListEntry
+import de.hglabor.common.playerlist.SkinTexture
+import de.hglabor.common.playerlist.body.PlayerListBody
+import de.hglabor.common.text.LiteralTextBuilder
+import net.axay.kspigot.extensions.broadcast
 import net.minecraft.network.chat.MutableComponent
+import net.minecraft.network.chat.Style
 
-class PlayerListEntryBuilder(val x: Int, val y: Int, val entry: PlayerListEntry = PlayerListEntry(x, y, SkinColor.WHITE)) {
-    var name: () -> MutableComponent = entry.textCallback
-        set(value) {
-            entry.textCallback = value
-            entry.forceUpdate = true
-            field = value
-        }
+class PlayerListEntryBuilder(val body: PlayerListBody, val x: Int, val y: Int) {
+    private val entry = body.getEntry(x, y)
 
-    var shouldUpdate: Boolean = entry.shouldUpdate
-        set(value) {
-            entry.shouldUpdate = value
-            field = value
-        }
+    fun name(text: MutableComponent) {
+        entry.setText(text)
+    }
 
-    var skin: SkinColor = entry.skin
-        set(value) {
-            entry.setSkin(value)
-            field = value
-        }
+    fun name(builder: LiteralTextBuilder.() -> Unit) {
+        entry.setText { LiteralTextBuilder("", Style.EMPTY, false).apply(builder).build() }
+    }
+
+    fun skin(skin: SkinTexture) {
+        entry.setSkin(skin)
+    }
+
+    fun skin(callback: () -> SkinTexture?) {
+        val skin = callback() ?: return
+        entry.setSkin(skin)
+    }
 }

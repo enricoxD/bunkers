@@ -19,7 +19,7 @@ import java.util.*
 
 @Serializable
 class BunkersTeam(
-    @Transient val _name: String = "",
+    @Transient private val _name: String = "",
     @Serializable(with = TextColorSerializer::class) val teamColor: TextColor,
     val iconMaterial: Material
 ): PlayerTeam(_name) {
