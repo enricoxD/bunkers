@@ -99,6 +99,10 @@ class Board(var updatingPeriod: Long = 20L) {
         deleteLine(lines[line])
     }
 
+    fun deleteLastLine() {
+        lines.last().unregister()
+    }
+
     fun clear() {
         lines.forEach { it.unregister() }
     }

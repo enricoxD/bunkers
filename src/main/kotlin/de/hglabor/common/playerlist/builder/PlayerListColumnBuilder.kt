@@ -1,29 +1,15 @@
 package de.hglabor.common.playerlist.builder
 
-import de.hglabor.common.playerlist.PlayerListManager
-import de.hglabor.common.playerlist.body.PlayerListColumn
-import de.hglabor.common.playerlist.body.PlayerListEntry
+import de.hglabor.common.playerlist.body.PlayerListBody
 
-class PlayerListColumnBuilder(val column: PlayerListColumn = PlayerListColumn(PlayerListManager.MAX_ENTRIES_PER_COLUMN)) {
-    operator fun PlayerListEntry.unaryPlus() {
-        column.addEntry(this)
+class PlayerListColumnBuilder(private val body: PlayerListBody, private val x: Int) {
+
+    fun entry(index: Int, callback: PlayerListEntryBuilder.() -> Unit): Pair<Int, PlayerListEntryBuilder.() -> Unit> {
+        return index to callback
     }
 
-    operator fun (PlayerListEntryBuilder.() -> Unit).unaryPlus() {
-        val entry = PlayerListEntryBuilder().apply(this).entry
-        column.addEntry(entry)
-    }
-
-    operator fun set(index: Int, entry: PlayerListEntry) {
-        column.addEntry(index, entry)
-    }
-
-    operator fun set(index: Int, entryCallback: PlayerListEntryBuilder.() -> Unit) {
-        val entry = PlayerListEntryBuilder().apply(entryCallback).entry
-        column.addEntry(index, entry)
-    }
-
-    fun entry(callback: PlayerListEntryBuilder.() -> Unit): PlayerListEntryBuilder.() -> Unit {
-        return callback
+    operator fun Pair<Int, (PlayerListEntryBuilder.() -> Unit)>.unaryPlus() {
+        val (y, builder) = this
+        PlayerListEntryBuilder(body, x, y).apply(builder)
     }
 }

@@ -5,6 +5,7 @@ import de.hglabor.common.serialization.UUIDSerializer
 import de.hglabor.hcfcore.Core
 import de.hglabor.hcfcore.team.claim.impl.TeamClaim
 import de.hglabor.hcfcore.configuration.TConfig
+import de.hglabor.hcfcore.listener.event.team.PlayerLeaveTeamEvent
 import de.hglabor.hcfcore.team.ITeam
 import de.hglabor.hcfcore.team.Raidable
 import de.hglabor.hcfcore.team.data.TeamRole
@@ -247,6 +248,9 @@ open class PlayerTeam(override var name: String) : ITeam, Raidable {
             text("the team.") { color = KColors.GRAY }
         }
         updateDtr()
+
+        val player = teamPlayer.player ?: return
+        PlayerLeaveTeamEvent(player, this).callEvent()
     }
 
     open fun updateDtr() {

@@ -22,6 +22,7 @@ object TeamCommand {
             TeamDemoteCommand,
             TeamDepositCommand,
             TeamDisbandCommand,
+            TeamHomeCommand,
             TeamInfoCommand,
             TeamInviteCommand,
             TeamJoinCommand,

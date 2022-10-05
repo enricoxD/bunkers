@@ -6,15 +6,13 @@ import de.hglabor.bunkers.game.phase.GamePhase
 import de.hglabor.bunkers.game.pvpstyle.PvPStyleVoteGUI
 import de.hglabor.bunkers.teams.TeamSelector
 import de.hglabor.common.extension.broadcast
-import de.hglabor.common.playerlist.PlayerListManager
-import de.hglabor.common.playerlist.builder.ABC
+import de.hglabor.hcfcore.Core
 import de.hglabor.hcfcore.event.koth.KothManager
 import de.hglabor.hcfcore.manager.player.teamPlayer
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.chat.literalText
 import net.axay.kspigot.event.unregister
 import net.axay.kspigot.extensions.onlinePlayers
-import org.bukkit.ChatColor
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockBreakEvent
@@ -24,8 +22,6 @@ import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntitySpawnEvent
 import org.bukkit.event.entity.FoodLevelChangeEvent
 import org.bukkit.event.player.*
-import org.bukkit.scoreboard.Scoreboard
-import java.util.UUID
 
 object LobbyPhase: GamePhase(120, IngamePhase) {
 
@@ -68,13 +64,12 @@ object LobbyPhase: GamePhase(120, IngamePhase) {
                 +{ literalText("Balance: $${player.teamPlayer.balance}") }
             }
         }
-
-        ABC.setPlayerList(player)
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
     fun onPlayerQuit(event: PlayerQuitEvent) {
         event.player.teamPlayer.team?.members?.remove(event.player.uniqueId)
+        Core.playerManager.cache.remove(event.player.uniqueId)
     }
 
     @EventHandler(priority = EventPriority.NORMAL)

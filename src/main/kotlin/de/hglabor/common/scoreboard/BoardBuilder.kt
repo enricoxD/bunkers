@@ -1,5 +1,6 @@
 package de.hglabor.auseinandersetzung.common.scoreboard
 
+import de.hglabor.common.scoreboard.ScoreboardManager
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 
@@ -49,7 +50,9 @@ class BoardBuilder(val board: Board) {
 inline fun Player.setScoreboard(updatingPeriod: Long = 20, bottomToTop: Boolean = true, crossinline builder: BoardBuilder.() -> Unit): Board {
     return Board(updatingPeriod).apply {
         BoardBuilder(this).apply(builder).invoke(bottomToTop)
-    }.setScoreboard(this)
+    }.setScoreboard(this).also { board ->
+        ScoreboardManager.boards[uniqueId] = board
+    }
 }
 
 inline fun Board(updatingPeriod: Long = 20, bottomToTop: Boolean = true, crossinline builder: BoardBuilder.() -> Unit): Board {
@@ -68,5 +71,6 @@ inline fun Board.set(updatingPeriod: Long = 20, bottomToTop: Boolean = true, cro
 }
 
 fun Player.setScoreboard(board: Board) {
+    ScoreboardManager.boards[uniqueId] = board
     board.setScoreboard(this)
 }

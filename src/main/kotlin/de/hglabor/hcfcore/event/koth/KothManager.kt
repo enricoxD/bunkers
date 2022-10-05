@@ -1,11 +1,8 @@
 package de.hglabor.hcfcore.event.koth
 
-import de.hglabor.auseinandersetzung.common.scoreboard.setScoreboard
-import de.hglabor.common.utils.TimeConverter
 import de.hglabor.hcfcore.Core
-import de.hglabor.hcfcore.team.impl.KothTeam
-import de.hglabor.hcfcore.listener.event.koth.PlayerCaptureKothEvent
 import de.hglabor.hcfcore.manager.player.teamPlayer
+import de.hglabor.hcfcore.team.impl.KothTeam
 import de.hglabor.hcfcore.timer.impl.KothTimer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -13,12 +10,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.chat.literalText
-import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.broadcast
 import net.axay.kspigot.runnables.KSpigotRunnable
 import net.axay.kspigot.runnables.task
-import org.bukkit.Bukkit
-import org.bukkit.event.player.PlayerJoinEvent
 import java.util.*
 
 object KothManager {
@@ -44,8 +38,6 @@ object KothManager {
             text(koth.name) { color = KColors.RED }
             text(" has been started!")
         })
-
-        registerListener()
         startTask()
     }
 
@@ -54,31 +46,6 @@ object KothManager {
         koth.timer.onEnd()
         stopTask()
         currentKoth = null
-    }
-
-    fun registerListener() {
-        listen<PlayerJoinEvent> {
-            it.player.setScoreboard {
-                title = literalText("KOTH") { color = KColors.RED }
-                period = 20
-                content {
-
-                    +{
-                        val koth = currentKoth
-                        val text = if (koth == null) "Kein Koth"
-                        else TimeConverter.stringify((koth.timer.remainingTime() / 1000).toInt())
-                        literalText(text)
-                    }
-                    +{
-                        literalText(StringBuilder().apply {
-                            repeat(5) {
-                                append((('a')..('z')).random())
-                            }
-                        }.toString())
-                    }
-                }
-            }
-        }
     }
 
     private val contestedAnnouncement = mutableSetOf<UUID>()
