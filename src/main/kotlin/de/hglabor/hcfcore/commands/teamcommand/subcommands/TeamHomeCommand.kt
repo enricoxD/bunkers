@@ -68,14 +68,19 @@ object TeamHomeCommand: ITeamCommand(TeamCommandCategory.INFORMATION, "home", "h
     }
 
     private fun startTeleportation(player: Player, location: Location) {
-        ScoreboardManager.boards[player.uniqueId]?.let { board ->
-            board.addLine {
+        // TODO display in scoreboard
+        /*ScoreboardManager.boards[player.uniqueId]?.let { board ->
+            board.addLineBelow {
                 literalText {
                     text("Teleporting: ") { color = KColors.YELLOW; bold = true }
-                    text("${(teleportationTimestamps[player.uniqueId] ?: 0) / 1000.0}s") { color = KColors.RED; bold = true }
+                    val remainingTime = (teleportationTimestamps[player.uniqueId] ?: 0) - System.currentTimeMillis()
+                    if (remainingTime > 0)
+                        text("${remainingTime / 1000.0}s") { color = KColors.RED; bold = true }
+                    else
+                        text("0.0s") { color = KColors.RED; bold = true }
                 }
             }
-        }
+        }*/
 
         teleportationTimestamps[player.uniqueId] = System.currentTimeMillis() + TELEPORTATION_TIME
         player.sendMsg {
@@ -104,7 +109,8 @@ object TeamHomeCommand: ITeamCommand(TeamCommandCategory.INFORMATION, "home", "h
     }
 
     private fun cancelTeleportation(player: Player) {
-        ScoreboardManager.boards[player.uniqueId]?.deleteLastLine()
+        // TODO remove from scoreboard
+        //ScoreboardManager.boards[player.uniqueId]?.deleteLastLine()
         teleportationTimestamps.remove(player.uniqueId)
         player.sendMsg {
             text("Your teleport has been ") { color = KColors.GRAY }
