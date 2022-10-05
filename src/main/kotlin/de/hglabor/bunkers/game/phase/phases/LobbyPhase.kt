@@ -6,6 +6,7 @@ import de.hglabor.bunkers.game.phase.GamePhase
 import de.hglabor.bunkers.game.pvpstyle.PvPStyleVoteGUI
 import de.hglabor.bunkers.teams.TeamSelector
 import de.hglabor.common.extension.broadcast
+import de.hglabor.hcfcore.Core
 import de.hglabor.hcfcore.event.koth.KothManager
 import de.hglabor.hcfcore.manager.player.teamPlayer
 import net.axay.kspigot.chat.KColors
@@ -68,6 +69,7 @@ object LobbyPhase: GamePhase(120, IngamePhase) {
     @EventHandler(priority = EventPriority.NORMAL)
     fun onPlayerQuit(event: PlayerQuitEvent) {
         event.player.teamPlayer.team?.members?.remove(event.player.uniqueId)
+        Core.playerManager.cache.remove(event.player.uniqueId)
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
