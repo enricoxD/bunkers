@@ -52,7 +52,7 @@ object IngamePhase : GamePhase(1800, EndPhase) {
         Core.playerManager.teamPlayers.forEach { player ->
             (player.team as? BunkersTeam)?.let { team ->
                 player.player?.sendActionBar(literalText {
-                    text("Team $team") { color = team.teamColor }
+                    text("Team ${team.name}") { color = team.teamColor }
                     text(" | ") { color = KColors.DIMGRAY }
                     text("DTR: ") { color = KColors.GRAY }
                     text("${team.dtr}") { color = KColors.WHITE }
