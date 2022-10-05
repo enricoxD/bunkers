@@ -1,9 +1,9 @@
-package de.hglabor.common.automation
+package de.hglabor.common.utils
 
 class UpdatingProperty<T>(var callback: () -> T) {
     constructor(value: T) : this({ value }) {
         shouldUpdate = false
-        forceUpdate = false
+        forceUpdate = true
     }
 
     var value: T = callback()

@@ -177,8 +177,8 @@ class PlayerListBody {
         entries.forEach { column ->
             column.forEach { entry ->
                 shownTo.mapNotNull { Bukkit.getPlayer(it) }.forEach { player ->
-                    entry.updateName(player)
-                    entry.updateSkin(player)
+                    if (entry.shouldUpdateName) entry.updateName(player)
+                    if (entry.shouldUpdateSkin) entry.updateSkin(player)
                 }
             }
         }

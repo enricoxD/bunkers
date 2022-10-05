@@ -2,10 +2,10 @@ package de.hglabor.common.playerlist.body
 
 import com.mojang.authlib.GameProfile
 import com.mojang.authlib.properties.Property
-import de.hglabor.common.automation.UpdatingProperty
 import de.hglabor.common.extension.connection
 import de.hglabor.common.playerlist.SkinTexture
 import de.hglabor.common.text.literalText
+import de.hglabor.common.utils.UpdatingProperty
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket
 import net.minecraft.server.MinecraftServer

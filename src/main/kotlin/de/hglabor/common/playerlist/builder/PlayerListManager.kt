@@ -10,14 +10,21 @@ import de.hglabor.common.playerlist.body.PlayerListBody
 import de.hglabor.common.text.literalText
 import de.hglabor.hcfcore.manager.player.teamPlayer
 import net.axay.kspigot.chat.KColors
+import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.onlinePlayers
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerJoinEvent
 
-object ABC {
-    // TODO rename class x D
-    // TODO skins dont update?
+object PlayerListManager {
+
+    fun enable() {
+        listen<PlayerJoinEvent> {
+            PlayerListManager.setPlayerList(it.player)
+        }
+    }
+
     fun setPlayerList(player: Player) {
-        player.setTablist {
+        player.setPlayerList {
             +column(0) {
                 +entry(2) {
                     name(literalText("Team Info") { color = KColors.AQUAMARINE.value(); bold = true })
@@ -125,9 +132,8 @@ object ABC {
                     val bukkitPlayer = member?.player
 
                     when {
-                        member == null -> SkinTexture.GRAY
                         bukkitPlayer != null -> SkinTexture.PlayerSkinTexture(bukkitPlayer)
-                        else -> null
+                        else -> SkinTexture.GRAY
                     }
                 }
             }
@@ -165,9 +171,9 @@ object ABC {
     }
 }
 
-inline fun Player.setTablist(builder: PlayerListBodyBuilder.() -> Unit): PlayerListBody {
+inline fun Player.setPlayerList(builder: PlayerListBodyBuilder.() -> Unit): PlayerListBody {
     return PlayerListBody().apply {
         PlayerListBodyBuilder(this).apply(builder)
-        show(this@setTablist)
+        show(this@setPlayerList)
     }
 }

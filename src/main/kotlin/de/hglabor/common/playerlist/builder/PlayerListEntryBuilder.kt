@@ -22,8 +22,7 @@ class PlayerListEntryBuilder(val body: PlayerListBody, val x: Int, val y: Int) {
         entry.setSkin(skin)
     }
 
-    fun skin(callback: () -> SkinTexture?) {
-        val skin = callback() ?: return
-        entry.setSkin(skin)
+    fun skin(callback: () -> SkinTexture) {
+        entry.setSkin(callback)
     }
 }
