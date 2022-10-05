@@ -51,19 +51,6 @@ object LobbyPhase: GamePhase(120, IngamePhase) {
         player.inventory.clear()
         PvPStyleVoteGUI.giveItem(player)
         TeamSelector.giveItem(player)
-
-        player.setScoreboard {
-            title = literalText("Bunkers")
-
-            content {
-                +{ literalText("Phase: ${GameManager.currentPhase::class.simpleName}") }
-                +{ literalText("Time: ${GameManager.elapsedTime}") }
-                +literalText("")
-                +{ literalText("KOTH: ${KothManager.currentKoth?.timer?.remainingTime()}") }
-                +literalText("")
-                +{ literalText("Balance: $${player.teamPlayer.balance}") }
-            }
-        }
     }
 
     @EventHandler(priority = EventPriority.NORMAL)

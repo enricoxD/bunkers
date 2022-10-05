@@ -4,7 +4,7 @@ import com.mojang.authlib.GameProfile
 import com.mojang.authlib.properties.Property
 import de.hglabor.common.extension.connection
 import de.hglabor.common.playerlist.SkinTexture
-import de.hglabor.common.text.literalText
+import de.hglabor.common.text.mcText
 import de.hglabor.common.utils.UpdatingProperty
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoPacket
@@ -24,7 +24,7 @@ class PlayerListEntry(val x: Int, val y: Int) {
         private val SERVER = MinecraftServer.getServer()
     }
 
-    private var Name = UpdatingProperty(literalText())
+    private var Name = UpdatingProperty(mcText())
     private val Skin = UpdatingProperty<SkinTexture>(SkinTexture.DARK_GRAY)
 
     val serverPlayer = ServerPlayer(

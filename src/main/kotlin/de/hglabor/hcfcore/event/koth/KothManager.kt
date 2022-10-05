@@ -30,7 +30,7 @@ object KothManager {
     }
 
     fun startKoth(koth: KothTeam) {
-        currentKoth = Koth(koth, KothTimer(koth.name, 30))
+        currentKoth = Koth(koth, KothTimer(koth.name, 300))
 
         broadcast(literalText {
             component(kothPrefix)

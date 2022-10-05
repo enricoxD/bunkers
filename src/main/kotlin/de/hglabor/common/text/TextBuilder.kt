@@ -16,7 +16,7 @@ import net.minecraft.network.chat.*
  * @param baseText the text you want to begin with, it is okay to let this empty
  * @param builder the builder which can be used to set the style and add child text components
  */
-inline fun literalText(
+inline fun mcText(
     baseText: String = "",
     builder: LiteralTextBuilder.() -> Unit = { }
 ) = LiteralTextBuilder(baseText, Style.EMPTY, false).apply(builder).build()

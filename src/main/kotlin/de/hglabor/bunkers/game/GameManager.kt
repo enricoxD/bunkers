@@ -3,7 +3,7 @@ package de.hglabor.bunkers.game
 import de.hglabor.bunkers.game.phase.GamePhase
 import de.hglabor.bunkers.game.phase.phases.LobbyPhase
 import de.hglabor.bunkers.game.pvpstyle.PvPStyleManager
-import de.hglabor.common.playerlist.builder.PlayerListManager
+import de.hglabor.bunkers.mechanics.ScoreboardPlayerList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -18,7 +18,7 @@ object GameManager {
 
     fun enable() {
         currentPhase.onStart()
-        PlayerListManager.enable()
+        ScoreboardPlayerList.enable()
         CoroutineScope(Dispatchers.IO).launch {
             startTimer()
         }

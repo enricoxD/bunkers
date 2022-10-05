@@ -1,33 +1,90 @@
-package de.hglabor.common.playerlist.builder
+package de.hglabor.bunkers.mechanics
 
+import de.hglabor.auseinandersetzung.common.scoreboard.setScoreboard
 import de.hglabor.bunkers.game.GameManager
 import de.hglabor.bunkers.game.phase.phases.LobbyPhase
-import de.hglabor.bunkers.mechanics.PlayerRespawn
 import de.hglabor.bunkers.teams.BunkersTeam
 import de.hglabor.bunkers.teams.TeamManager
 import de.hglabor.common.playerlist.SkinTexture
 import de.hglabor.common.playerlist.body.PlayerListBody
-import de.hglabor.common.text.literalText
+import de.hglabor.common.playerlist.builder.PlayerListBodyBuilder
+import de.hglabor.common.playerlist.builder.PlayerListColumnBuilder
+import de.hglabor.common.text.mcText
+import de.hglabor.hcfcore.event.koth.KothManager
 import de.hglabor.hcfcore.manager.player.teamPlayer
 import net.axay.kspigot.chat.KColors
+import net.axay.kspigot.chat.literalText
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.extensions.onlinePlayers
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
-object PlayerListManager {
-
+object ScoreboardPlayerList {
     fun enable() {
         listen<PlayerJoinEvent> {
-            PlayerListManager.setPlayerList(it.player)
+            setPlayerList(it.player)
+            setScoreboard(it.player)
         }
     }
 
-    fun setPlayerList(player: Player) {
+    private fun setScoreboard(player: Player) {
+        player.setScoreboard {
+            title = literalText {
+                text("HGLabor") { color = KColors.DEEPSKYBLUE; bold = true }
+                text(" | ") { color = KColors.DARKGRAY }
+                text("Bunkers") { color = KColors.WHITE }
+            }
+
+            content {
+                +{
+                    if (GameManager.currentPhase == LobbyPhase) {
+                        literalText {
+                            text("Start: ") { color = KColors.GRAY; bold = true }
+                            GameManager.currentPhase.remainingTime.seconds.toComponents { min, sec, _ ->
+                                text("${min}:${sec}") { color = KColors.FLORALWHITE }
+                            }
+                        }
+                    } else {
+                        literalText {
+                            text("Game Time: ") { color = KColors.GRAY }
+                            GameManager.elapsedTime.seconds.toComponents { min, sec, _ ->
+                                text("${min}:${sec}") { color = KColors.FLORALWHITE }
+                            }
+                        }
+                    }
+                }
+
+                + {
+                    literalText {
+                        val koth = KothManager.currentKoth
+                        text("${koth?.team?.name ?: "KOTH"}: ") { color = KColors.ORANGE; bold = true }
+                        if (koth == null) {
+                            text("Hasn't started") { color = KColors.WHITE }
+                        } else {
+                            koth.timer.remainingTime().milliseconds.toComponents { min, sec, _ ->
+                                text("${min}:${sec}") { color = KColors.FLORALWHITE }
+                            }
+                        }
+                    }
+                }
+
+                + {
+                    literalText {
+                        text("Balance: ") { color = KColors.GREEN; bold = true }
+                        text("$${player.teamPlayer.balance}") { color = KColors.FLORALWHITE }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setPlayerList(player: Player) {
         player.setPlayerList {
             +column(0) {
                 +entry(2) {
-                    name(literalText("Team Info") { color = KColors.AQUAMARINE.value(); bold = true })
+                    name(mcText("Team Info") { color = KColors.AQUAMARINE.value(); bold = true })
                 }
 
                 +entry(3) {
@@ -62,7 +119,7 @@ object PlayerListManager {
                 }
 
                 +entry(2 + TeamManager.MAX_PLAYERS_PER_FACTION + 4) {
-                    name(literalText("Game Info") { color = KColors.AQUAMARINE.value(); bold = true })
+                    name(mcText("Game Info") { color = KColors.AQUAMARINE.value(); bold = true })
                 }
 
                 +entry(3 + TeamManager.MAX_PLAYERS_PER_FACTION + 4) {
