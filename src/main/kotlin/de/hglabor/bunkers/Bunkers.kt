@@ -19,10 +19,7 @@ import de.hglabor.hcfcore.commands.KothCommand
 import de.hglabor.hcfcore.commands.PayCommand
 import de.hglabor.hcfcore.commands.hcfcorecommand.AdminCommand
 import de.hglabor.hcfcore.commands.teamcommand.TeamCommand
-import de.hglabor.hcfcore.commands.teamcommand.subcommands.TeamChatCommand
-import de.hglabor.hcfcore.commands.teamcommand.subcommands.TeamInfoCommand
-import de.hglabor.hcfcore.commands.teamcommand.subcommands.TeamListCommand
-import de.hglabor.hcfcore.commands.teamcommand.subcommands.TeamWhoCommand
+import de.hglabor.hcfcore.commands.teamcommand.subcommands.*
 import de.hglabor.hcfcore.manager.claim.impl.FlatFileClaimManager
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.chat.literalText
@@ -73,7 +70,7 @@ class Bunkers : KSpigot() {
         KothCommand.register()
         TeamCommand.register(
             TeamChatCommand,
-
+            TeamHomeCommand,
             TeamInfoCommand,
             TeamListCommand,
             TeamWhoCommand,
@@ -82,6 +79,3 @@ class Bunkers : KSpigot() {
     }
 }
 
-class NPC(world: World, gameProfile: GameProfile) :
-    ServerPlayer(MinecraftServer.getServer(), (world as CraftWorld).handle, gameProfile, null) {
-}
