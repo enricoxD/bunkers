@@ -9,6 +9,8 @@ import de.hglabor.common.extension.addOrDropItem
 import de.hglabor.hcfcore.Core
 import de.hglabor.hcfcore.event.koth.KothManager
 import de.hglabor.hcfcore.manager.player.teamPlayer
+import net.axay.kspigot.chat.KColors
+import net.axay.kspigot.chat.literalText
 import net.axay.kspigot.extensions.bukkit.feedSaturate
 import net.axay.kspigot.extensions.bukkit.heal
 import net.axay.kspigot.extensions.onlinePlayers
@@ -16,7 +18,7 @@ import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
-object IngamePhase: GamePhase(1800, EndPhase) {
+object IngamePhase : GamePhase(1800, EndPhase) {
 
     override fun onStart() {
         onlinePlayers.forEach { player ->
@@ -46,8 +48,18 @@ object IngamePhase: GamePhase(1800, EndPhase) {
 
     override fun onTick() {
         super.onTick()
-        if (GameManager.elapsedTime != 0 && GameManager.elapsedTime % 3 == 0) {
-            Core.playerManager.teamPlayers.forEach { player ->
+
+        Core.playerManager.teamPlayers.forEach { player ->
+            (player.team as? BunkersTeam)?.let { team ->
+                player.player?.sendActionBar(literalText {
+                    text("Team $team") { color = team.teamColor }
+                    text(" | ") { color = KColors.DIMGRAY }
+                    text("DTR: ") { color = KColors.GRAY }
+                    text("${team.dtr}") { color = KColors.WHITE }
+                })
+            }
+
+            if (GameManager.elapsedTime != 0 && GameManager.elapsedTime % 3 == 0) {
                 player.balance += 3
             }
         }
