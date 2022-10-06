@@ -1,16 +1,13 @@
 package de.hglabor.bunkers.game.phase.phases
 
-import de.hglabor.auseinandersetzung.common.scoreboard.setScoreboard
 import de.hglabor.bunkers.game.GameManager
 import de.hglabor.bunkers.game.phase.GamePhase
 import de.hglabor.bunkers.game.pvpstyle.PvPStyleVoteGUI
 import de.hglabor.bunkers.teams.TeamSelector
 import de.hglabor.common.extension.broadcast
 import de.hglabor.hcfcore.Core
-import de.hglabor.hcfcore.event.koth.KothManager
 import de.hglabor.hcfcore.manager.player.teamPlayer
 import net.axay.kspigot.chat.KColors
-import net.axay.kspigot.chat.literalText
 import net.axay.kspigot.event.unregister
 import net.axay.kspigot.extensions.onlinePlayers
 import org.bukkit.event.EventHandler
