@@ -1,5 +1,6 @@
 package de.hglabor.bunkers.teams
 
+import de.hglabor.common.extension.sendMsg
 import de.hglabor.hcfcore.manager.player.teamPlayer
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.chat.literalText
@@ -51,25 +52,34 @@ object TeamSelector {
             }
         }
 
+        fun joinTeam(player: Player, team: BunkersTeam) {
+            team.join(player.teamPlayer)
+            player.sendMsg {
+                text("You joined ") { color = KColors.GRAY }
+                text("Team ${team.name}") { color = team.teamColor }
+                text(".") { color = KColors.GRAY }
+            }
+        }
+
         return kSpigotGUI(GUIType.THREE_BY_NINE) {
             title = literalText("Teams") { color = KColors.AQUAMARINE }
 
             page(1) {
                 placeholder(Slots.All, itemStack(Material.WHITE_STAINED_GLASS_PANE) { meta { name = literalText("") } })
                 button(Slots.RowTwoSlotTwo, teamIcon(TeamManager.blue)) {
-                    TeamManager.blue.join(it.player.teamPlayer)
+                    joinTeam(it.player, TeamManager.blue)
                 }
 
                 button(Slots.RowTwoSlotFour, teamIcon(TeamManager.green)) {
-                    TeamManager.green.join(it.player.teamPlayer)
+                    joinTeam(it.player, TeamManager.green)
                 }
 
                 button(Slots.RowTwoSlotSix, teamIcon(TeamManager.yellow)) {
-                    TeamManager.yellow.join(it.player.teamPlayer)
+                    joinTeam(it.player, TeamManager.yellow)
                 }
 
                 button(Slots.RowTwoSlotEight, teamIcon(TeamManager.red)) {
-                    TeamManager.red.join(it.player.teamPlayer)
+                    joinTeam(it.player, TeamManager.red)
                 }
             }
         }
