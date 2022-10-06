@@ -1,11 +1,10 @@
 package de.hglabor.hcfcore.commands.teamcommand.subcommands
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
-import de.hglabor.auseinandersetzung.common.scoreboard.Board
 import de.hglabor.common.extension.sendMsg
 import de.hglabor.common.scoreboard.ScoreboardManager
-import de.hglabor.hcfcore.commands.teamcommand.TeamCommandCategory
 import de.hglabor.hcfcore.commands.teamcommand.ITeamCommand
+import de.hglabor.hcfcore.commands.teamcommand.TeamCommandCategory
 import de.hglabor.hcfcore.listener.event.team.PlayerLeaveTeamEvent
 import de.hglabor.hcfcore.manager.player.teamPlayer
 import kotlinx.coroutines.CoroutineScope
@@ -17,13 +16,15 @@ import net.axay.kspigot.chat.literalText
 import net.axay.kspigot.commands.runs
 import net.axay.kspigot.event.listen
 import net.axay.kspigot.runnables.sync
-import net.axay.kspigot.runnables.taskRunLater
 import net.minecraft.commands.CommandSourceStack
 import org.bukkit.Location
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
+import org.bukkit.event.entity.ProjectileLaunchEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import java.util.UUID
+import org.bukkit.event.player.PlayerTeleportEvent
+import java.util.*
 
 object TeamHomeCommand: ITeamCommand(TeamCommandCategory.INFORMATION, "home", "h") {
     private const val TELEPORTATION_TIME = 15000L
@@ -136,6 +137,16 @@ object TeamHomeCommand: ITeamCommand(TeamCommandCategory.INFORMATION, "home", "h
 
         listen<PlayerLeaveTeamEvent> {
             cancelTeleportation(it.player)
+        }
+
+        listen<PlayerTeleportEvent> {
+            cancelTeleportation(it.player)
+        }
+
+        listen<ProjectileLaunchEvent> {
+            if (it.entityType != EntityType.ENDER_PEARL) return@listen
+            val player = it.entity.shooter as? Player ?: return@listen
+            cancelTeleportation(player)
         }
     }
 }
