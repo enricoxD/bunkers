@@ -1,5 +1,6 @@
 package de.hglabor.bunkers.mechanics
 
+import de.hglabor.bunkers.teams.BunkersTeam
 import de.hglabor.common.extension.broadcast
 import de.hglabor.hcfcore.manager.player.teamPlayer
 import de.hglabor.hcfcore.player.impl.TeamPlayer
@@ -63,12 +64,10 @@ object DeathMessages {
     }
 
     private fun formattedPlayer(teamPlayer: TeamPlayer, fallbackColor: TextColor): Component {
-        val bukkitColor = fallbackColor.bukkitColor
-
         return literalText {
-            text(teamPlayer.name) { color = KColors.RED }
+            text(teamPlayer.name) { color = (teamPlayer.team as? BunkersTeam)?.teamColor ?: fallbackColor }
             text("[") { color = KColors.DARKGRAY }
-            text("${teamPlayer.statistics.kills}") { color = KColors.DARKRED }
+            text("${teamPlayer.statistics.kills}") { color = KColors.WHITE }
             text("]") { color = KColors.DARKGRAY }
         }
     }
