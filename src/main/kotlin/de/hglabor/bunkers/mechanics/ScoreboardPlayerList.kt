@@ -38,19 +38,20 @@ object ScoreboardPlayerList {
             }
 
             content {
+                +literalText("                  ") { color = KColors.DARKGRAY; strikethrough = true }
                 +{
                     if (GameManager.currentPhase == LobbyPhase) {
                         literalText {
                             text("Start: ") { color = KColors.GRAY; bold = true }
                             GameManager.currentPhase.remainingTime.seconds.toComponents { min, sec, _ ->
-                                text("${min}:${sec}") { color = KColors.FLORALWHITE }
+                                text("${min}:${String.format("%02d", sec)}") { color = KColors.FLORALWHITE }
                             }
                         }
                     } else {
                         literalText {
                             text("Game Time: ") { color = KColors.GRAY }
                             GameManager.elapsedTime.seconds.toComponents { min, sec, _ ->
-                                text("${min}:${sec}") { color = KColors.FLORALWHITE }
+                                text("${min}:${String.format("%02d", sec)}") { color = KColors.FLORALWHITE }
                             }
                         }
                     }
@@ -64,7 +65,7 @@ object ScoreboardPlayerList {
                             text("Hasn't started") { color = KColors.WHITE }
                         } else {
                             koth.timer.remainingTime().milliseconds.toComponents { min, sec, _ ->
-                                text("${min}:${sec}") { color = KColors.FLORALWHITE }
+                                text("${min}:${String.format("%02d", sec)}") { color = KColors.FLORALWHITE }
                             }
                         }
                     }
@@ -76,6 +77,7 @@ object ScoreboardPlayerList {
                         text("$${player.teamPlayer.balance}") { color = KColors.FLORALWHITE }
                     }
                 }
+                +literalText("                  ") { color = KColors.DARKGRAY; strikethrough = true }
             }
         }
     }
@@ -152,9 +154,12 @@ object ScoreboardPlayerList {
     private fun PlayerListColumnBuilder.addTeamEntries(y: Int, team: BunkersTeam, skin: SkinTexture) {
         +entry(y) {
             name {
-                text("Team ${team.name}") { color = team.teamColor.value();bold = true }
+                text("Team ${team.name}") { color = team.teamColor.value(); bold = true }
                 text(" | ") { color = KColors.DARKGRAY.value() }
                 text("${team.dtr}") { color = KColors.FLORALWHITE.value() }
+                if (team.isRaidable ) {
+                    strikethrough = true
+                }
             }
             skin(skin)
         }
