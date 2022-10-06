@@ -43,6 +43,14 @@ object IngamePhase : GamePhase(1800, EndPhase) {
         }
         KothManager.startRandomKoth()
         BunkersCaptureKothEvent.register()
+
+        Core.teamManager.teams
+            .filterIsInstance<BunkersTeam>()
+            .filter { it.members.isEmpty() }
+            .forEach { team ->
+                team.dtr = -1.0F
+            }
+
         super.onStart()
     }
 
