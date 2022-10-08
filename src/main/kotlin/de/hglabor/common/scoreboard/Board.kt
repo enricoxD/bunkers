@@ -1,4 +1,4 @@
-package de.hglabor.auseinandersetzung.common.scoreboard
+package de.hglabor.common.scoreboard
 
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.chat.literalText
@@ -40,35 +40,37 @@ class Board(var updatingPeriod: Long = 20L) {
     }
 
     fun resetBoard() {
-        lines.forEach { it.unregister() }
+        lines.forEach { it.unregister(false) }
         lines.forEach { it.register() }
     }
 
-    fun addLine(line: Int = -1, boardLine: BoardLine) {
+    fun addLine(line: Int = -1, boardLine: BoardLine): BoardLine {
         if (line == -1) {
             lines.add(boardLine)
             boardLine.register()
         } else {
-            lines.forEach { it.unregister() }
+            lines.forEach { it.unregister(false) }
             lines.add(line, boardLine)
             lines.forEach { it.register() }
         }
+
+        return boardLine
     }
 
-    fun addLine(line: Int = -1, textCallback: () -> Component) {
-        addLine(line, BoardLine(textCallback))
+    fun addLine(line: Int = -1, textCallback: () -> Component): BoardLine {
+        return addLine(line, BoardLine(textCallback))
     }
 
-    fun addLine(line: Int = -1, text: Component) {
-        addLine(line, BoardLine(text))
+    fun addLine(line: Int = -1, text: Component): BoardLine {
+        return addLine(line, BoardLine(text))
     }
 
-    fun addLineBelow(textCallback: () -> Component) {
-        addLine(0, BoardLine(textCallback))
+    fun addLineBelow(textCallback: () -> Component): BoardLine {
+        return addLine(0, BoardLine(textCallback))
     }
 
-    fun addLineBelow(text: Component) {
-        addLine(0, BoardLine(text))
+    fun addLineBelow(text: Component): BoardLine {
+        return addLine(0, BoardLine(text))
     }
 
     fun getLine(line: Int) = lines.getOrNull(line)
@@ -100,11 +102,11 @@ class Board(var updatingPeriod: Long = 20L) {
     }
 
     fun deleteLastLine() {
-        lines.last().unregister()
+        lines.last().unregister(true)
     }
 
     fun clear() {
-        lines.forEach { it.unregister() }
+        lines.forEach { it.unregister(true) }
     }
 
     fun delete() {
@@ -147,10 +149,12 @@ class Board(var updatingPeriod: Long = 20L) {
             objective.getScore(entry).score = index
         }
 
-        fun unregister() {
-            val newLines = lines.toMutableList()
-            newLines -= this
-            lines = newLines
+        fun unregister(remove: Boolean) {
+            if (remove) {
+                val newLines = lines.toMutableList()
+                newLines -= this
+                lines = newLines
+            }
             scoreboard.resetScores(entry)
         }
 

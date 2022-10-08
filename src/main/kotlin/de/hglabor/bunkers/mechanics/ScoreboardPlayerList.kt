@@ -1,6 +1,6 @@
 package de.hglabor.bunkers.mechanics
 
-import de.hglabor.auseinandersetzung.common.scoreboard.setScoreboard
+import de.hglabor.common.scoreboard.setScoreboard
 import de.hglabor.bunkers.game.GameManager
 import de.hglabor.bunkers.game.phase.phases.LobbyPhase
 import de.hglabor.bunkers.teams.BunkersTeam

@@ -1,8 +1,5 @@
 package de.hglabor.common.scoreboard
 
-import de.hglabor.auseinandersetzung.common.scoreboard.Board
-import de.hglabor.auseinandersetzung.common.scoreboard.BoardBuilder
-import de.hglabor.auseinandersetzung.common.scoreboard.set
 import de.hglabor.common.scoreboard.ScoreboardManager.boards
 import org.bukkit.entity.Player
 import java.util.*

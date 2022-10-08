@@ -1,6 +1,5 @@
-package de.hglabor.auseinandersetzung.common.scoreboard
+package de.hglabor.common.scoreboard
 
-import de.hglabor.common.scoreboard.ScoreboardManager
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 
