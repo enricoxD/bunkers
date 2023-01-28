@@ -8,10 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.axay.kspigot.chat.KColors
-import net.axay.kspigot.event.SingleListener
 import org.bukkit.Bukkit
-import org.bukkit.event.Event
-import kotlin.coroutines.coroutineContext
 import kotlin.time.Duration.Companion.seconds
 
 object EndPhase: GamePhase(20, null) {
@@ -24,8 +21,8 @@ object EndPhase: GamePhase(20, null) {
                     text("${winner?.name} ") { color = winner?.teamColor ?: KColors.WHITE }
                     text("wins.") { color = KColors.GRAY }
                 }
+                delay(1.seconds)
             }
-            delay(1.seconds)
         }
     }
 
