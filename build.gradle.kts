@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 val javaVersion = 17
 val kspigotVersion = "1.19.0"
 
@@ -24,10 +26,11 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.7.10")
 
     // KMongo
-    compileOnly("org.litote.kmongo:kmongo-coroutine-serialization:4.7.1")
+    compileOnly("org.litote.kmongo:kmongo-coroutine-serialization:4.8.0")
 
     // KSpigot dependency
     implementation("net.axay", "kspigot", kspigotVersion)
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 tasks {
@@ -38,7 +41,7 @@ tasks {
         fun reloc(pkg: String) = relocate(pkg, "de.hglabor.dependency.$pkg")
         reloc("net.axay")
     }
-    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    withType<KotlinCompile> {
         kotlinOptions {
             jvmTarget = "$javaVersion"
         }

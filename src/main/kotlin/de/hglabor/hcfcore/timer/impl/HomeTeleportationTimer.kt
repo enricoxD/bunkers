@@ -5,6 +5,7 @@ import de.hglabor.hcfcore.player.impl.TeamPlayer
 import de.hglabor.hcfcore.timer.ITimer
 import kotlinx.coroutines.*
 import net.axay.kspigot.runnables.sync
+import kotlin.math.max
 import kotlin.time.Duration.Companion.milliseconds
 
 class HomeTeleportationTimer(
@@ -31,7 +32,7 @@ class HomeTeleportationTimer(
     override fun remainingTime(): Long {
         val start = start ?: return duration * 1000L
         val end = start + (duration * 1000L)
-        return end - System.currentTimeMillis()
+        return max(-1, end - System.currentTimeMillis())
     }
 
     override fun onEnd() {

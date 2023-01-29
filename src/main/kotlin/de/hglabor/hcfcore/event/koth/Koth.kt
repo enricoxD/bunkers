@@ -16,7 +16,7 @@ class Koth(
 
     fun startCapturing(player: Player) {
         currentKing = player.teamPlayer
-        timer.start = System.currentTimeMillis()
+        timer.start()
         player.sendMessage(literalText {
             component(KothManager.kothPrefix)
             text("You are now ")

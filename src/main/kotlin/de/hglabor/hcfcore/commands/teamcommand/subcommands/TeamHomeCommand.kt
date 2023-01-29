@@ -2,15 +2,13 @@ package de.hglabor.hcfcore.commands.teamcommand.subcommands
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import de.hglabor.common.extension.sendMsg
+import de.hglabor.common.scoreboard.Board
 import de.hglabor.common.scoreboard.ScoreboardManager
 import de.hglabor.hcfcore.commands.teamcommand.ITeamCommand
 import de.hglabor.hcfcore.commands.teamcommand.TeamCommandCategory
 import de.hglabor.hcfcore.listener.event.team.PlayerLeaveTeamEvent
 import de.hglabor.hcfcore.manager.player.teamPlayer
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import net.axay.kspigot.chat.KColors
 import net.axay.kspigot.chat.literalText
 import net.axay.kspigot.commands.runs
@@ -32,6 +30,8 @@ object TeamHomeCommand: ITeamCommand(TeamCommandCategory.INFORMATION, "home", "h
     override val description: String = "Teleport to your team's home"
 
     private val teleportationTimestamps = mutableMapOf<UUID, Long>()
+    private val countdownBoardLine = mutableMapOf<UUID, Board.BoardLine>()
+    private val coroutineJobs = mutableMapOf<UUID, Job>()
 
     override val commandCallback: LiteralArgumentBuilder<CommandSourceStack>.() -> Unit = {
         runs {
@@ -69,9 +69,8 @@ object TeamHomeCommand: ITeamCommand(TeamCommandCategory.INFORMATION, "home", "h
     }
 
     private fun startTeleportation(player: Player, location: Location) {
-        // TODO display in scoreboard
-        /*ScoreboardManager.boards[player.uniqueId]?.let { board ->
-            board.addLineBelow {
+        ScoreboardManager.boards[player.uniqueId]?.let { board ->
+            countdownBoardLine[player.uniqueId] = board.addLineBelow {
                 literalText {
                     text("Teleporting: ") { color = KColors.YELLOW; bold = true }
                     val remainingTime = (teleportationTimestamps[player.uniqueId] ?: 0) - System.currentTimeMillis()
@@ -81,7 +80,7 @@ object TeamHomeCommand: ITeamCommand(TeamCommandCategory.INFORMATION, "home", "h
                         text("0.0s") { color = KColors.RED; bold = true }
                 }
             }
-        }*/
+        }
 
         teleportationTimestamps[player.uniqueId] = System.currentTimeMillis() + TELEPORTATION_TIME
         player.sendMsg {
@@ -100,6 +99,8 @@ object TeamHomeCommand: ITeamCommand(TeamCommandCategory.INFORMATION, "home", "h
                     player.teleport(location)
                 }
                 teleportationTimestamps.remove(player.uniqueId)
+                coroutineJobs.remove(player.uniqueId)
+                countdownBoardLine.remove(player.uniqueId)?.unregister(true)
                 player.sendMsg {
                     text("You have been teleported to your ") { color = KColors.GRAY }
                     text("team's home") { color = KColors.AQUAMARINE }
@@ -110,9 +111,8 @@ object TeamHomeCommand: ITeamCommand(TeamCommandCategory.INFORMATION, "home", "h
     }
 
     private fun cancelTeleportation(player: Player) {
-        // TODO remove from scoreboard
-        //ScoreboardManager.boards[player.uniqueId]?.deleteLastLine()
         teleportationTimestamps.remove(player.uniqueId)
+        countdownBoardLine.remove(player.uniqueId)?.unregister(true)
         player.sendMsg {
             text("Your teleport has been ") { color = KColors.GRAY }
             text("cancelled") { color = KColors.RED }
